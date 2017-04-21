@@ -22,7 +22,28 @@ public class StatusDao {
 		this.jdbc = new NamedParameterJdbcTemplate(dao);
 	}
 	
-	public List<Status> getEmp(String da){
+	public List<Status> getEmp() {
+		
+		
+		
+		
+		
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		return jdbc.query("select * from STATUS;",params, new RowMapper<Status>() {
+
+			@Override
+			public Status mapRow(ResultSet rs, int arg1) throws SQLException {
+				Status stat = new Status();	
+				stat.setDate(rs.getString("DATE"));
+				stat.setEmail(rs.getString("EMAIL"));
+				stat.setStatus(rs.getString("STATUS"));
+				return stat;
+			}
+		});
+	}
+	
+	
+	public List<Status> getEmp(String da) {
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("date",da);
 		return jdbc.query("select * from STATUS where DATE=:date;",params, new RowMapper<Status>(){
@@ -38,7 +59,7 @@ public class StatusDao {
 		});
 	}
 		
-	public void storeStatus(Status stat){
+	public void storeStatus(Status stat) {
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue("date",stat.getDate());
 		params.addValue("email",stat.getEmail());
@@ -46,10 +67,4 @@ public class StatusDao {
 		jdbc.update("insert into STATUS values(:email,:date,:status);", params);
 		System.out.println("success");
 	}
-
-	
-
-	
-
-
 }

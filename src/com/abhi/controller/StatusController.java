@@ -15,27 +15,31 @@ import com.abhi.service.StatusService;
 @RequestMapping("/")
 public class StatusController {
 	
-	private StatusService statservice;
-	
 	@Autowired
-	public void setStatservice(StatusService statservice ) {
-		this.statservice = statservice;
+	private StatusService statsSvc;
+	
+	public void setStatservice(StatusService statsSvc ) {
+		this.statsSvc = statsSvc;
 	}
 
 	@RequestMapping(method=RequestMethod.GET)
 	@ResponseBody
-	public List<Status> Read(@RequestParam("date")String date){
-		List<Status> s= statservice.getCurrentStatus(date);
-		System.out.println(s);
-		System.out.println(date);
-		return s;
+	public List<Status> read(@RequestParam(value="date",required=false)String date) {
+		if( date == null ) {
+			List<Status> s= statsSvc.getCurrentStatus();
+			return s;
+		}
+		else {
+			List<Status> s= statsSvc.getCurrentStatus(date);
+			return s;
+		}
+		
 	}
 		
 	@RequestMapping(method=RequestMethod.POST)
 	@ResponseBody
-	public Status add(@RequestBody Status inobj ){		
-		
-		return statservice.storeStat(inobj);		
+	public Status add(@RequestBody Status inobj ) {		
+		return statsSvc.storeStat(inobj);		
 	}
 	
 	

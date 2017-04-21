@@ -13,12 +13,6 @@ public class Status {
 	public Status() {
 		
 	}
-		
-	public Status(String email,Date date, String status) {
-		this.email = email;
-		this.date = date;
-		this.status = status;
-	}
 
 	public String getEmail() {
 		return email;

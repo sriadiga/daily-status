@@ -10,27 +10,32 @@ import com.abhi.model.Status;
 @Service("offerservice")
 public class StatusService {
 	
+	@Autowired
 	private StatusDao statDao;
 	
-	@Autowired
+	
 	public void setStatDao(StatusDao statDao) {
 		this.statDao = statDao;
 	}
+	
+	public List<Status> getCurrentStatus() {
+		return statDao.getEmp();
+	}
 
-	public List<Status> getCurrentStatus(String d){
-		return statDao.getEmp(d);
+	public List<Status> getCurrentStatus(String date) {
+		return statDao.getEmp(date);
 	}
 	
-	public Status storeStat(Status stat){
-		
+	public Status storeStat(Status stat) {
 		long millis=System.currentTimeMillis();  
 		Date date = new Date(millis);
-		if(date.toString().equals(stat.getDate().toString())){
-		statDao.storeStatus(stat);
-		return stat;
-		}else{
+		if( date.toString().equals(stat.getDate().toString()) ) {
+			statDao.storeStatus(stat);
 			return stat;
 		}
+		else{
+			 return stat;
+		    }
 	}
 	
 }
