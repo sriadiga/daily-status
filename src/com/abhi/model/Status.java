@@ -3,17 +3,12 @@ package com.abhi.model;
 import java.sql.Date;
 
 public class Status {
-
 	private String email;
 	
 	private Date date;
 	
 	private String status;
 	
-	public Status() {
-		
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -26,8 +21,8 @@ public class Status {
 		return date;
 	}
 
-	public void setDate(String  str) {
-		this.date =Date.valueOf(str);
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public String getStatus() {

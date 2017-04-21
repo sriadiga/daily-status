@@ -1,7 +1,9 @@
 package com.abhi.controller;
 
+import java.sql.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,38 +12,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.abhi.model.Status;
 import com.abhi.service.StatusService;
+import com.abhi.service.impl.StatusServiceImpl;
 
 @Controller
 @RequestMapping("/")
 public class StatusController {
 	
 	@Autowired
-	private StatusService statsSvc;
-	
-	public void setStatservice(StatusService statsSvc ) {
-		this.statsSvc = statsSvc;
-	}
+	private StatusService statusSvc;
 
 	@RequestMapping(method=RequestMethod.GET)
 	@ResponseBody
-	public List<Status> read(@RequestParam(value="date",required=false)String date) {
-		if( date == null ) {
-			List<Status> s= statsSvc.getCurrentStatus();
-			return s;
-		}
-		else {
-			List<Status> s= statsSvc.getCurrentStatus(date);
-			return s;
-		}
+	public List<Status> getStatus(
+		@RequestParam(value="date",required=false)
+		@DateTimeFormat(pattern="yyyy-MM-dd")
+		Date date) {
 		
+		return statusSvc.getStatus(date);
 	}
 		
 	@RequestMapping(method=RequestMethod.POST)
 	@ResponseBody
-	public Status add(@RequestBody Status inobj ) {		
-		return statsSvc.storeStat(inobj);		
+	public Status addStatus(@RequestBody Status status ) {		
+		return statusSvc.addStatus(status);		
 	}
-	
-	
-	
 }
