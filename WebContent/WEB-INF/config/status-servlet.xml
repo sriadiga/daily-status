@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<bean id="errMessages"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:resources/message.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="emailCredentials"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:resources/email.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<context:property-placeholder location="classpath:resources/*.properties" />
+	<context:component-scan base-package="com.status" />
+	<!-- edited here <context:annotation-config></context:annotation-config> -->
+	<mvc:annotation-driven />
+
+	<tx:annotation-driven transaction-manager="hibernateTransactionManager" />
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${database.driver}" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.user}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.status.model.Status</value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+
+	</bean>
+
+	<bean id="hibernateTransactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+	    <property name="velocityProperties">
+	        <props>
+	            <prop key="resource.loader">class</prop>
+	            <prop key="class.resource.loader.class">
+	                org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+	            </prop>
+	        </props>
+	    </property>
+	</bean>
+
+	<bean id="EmailScanner" class="com.status.wrapper.EmailScanner" />
+	<bean id="EmailSender" class="com.status.wrapper.EmailSender">
+	<property name="velocityEngine" ref="velocityEngine"/>
+	</bean>
+
+	<task:scheduled-tasks>
+		<task:scheduled ref="EmailSender" method="createSummary" cron="${summary_cron_freq}"/>
+		<task:scheduled ref="EmailSender" method="askForStatusMail" cron="${askForStatus_cron_freq}" /> 
+		<task:scheduled ref="EmailScanner" method="getUnreadMailsAndStore" cron="${email_scan_freq}" /> 
+	</task:scheduled-tasks>
+
+</beans>

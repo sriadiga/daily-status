@@ -1,0 +1,17 @@
+Hello all,<br><br>
+Here is what everyone has been up to: <br><br>
+
+ <hr>	
+#foreach ($status in $summary)
+  <br>
+   <b>Email ID:  </b> 	 $status.getEmail()   <br>
+   <b>Summary : </b>  <pre> <font face="Arial" size=2 > $status.getStatus() </font> </pre> 
+  <br>
+  <hr>
+#end
+
+<br>
+Thanks,<br>
+Daily Status Tracker
+<br><br>
+PS: If your email ID is missing, please email daily_status@krishagni.com.
